@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Konfigurasi Mudah</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      background: url("bg.jpg") no-repeat center center fixed; /* Ganti gambar background di sini */
+      background-size: cover;
+      color: white;
+    }
+    header {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 1rem;
+      font-size: 1.5rem;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+    .btn {
+      display: inline-block;
+      margin: 20px;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: #ff9800;
+      color: white;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #e68900;
+    }
+  </style>
+</head>
+<body>
+  <header>Website Konfigurasi Mudah</header>
+
+  <div class="gallery">
+    <img src="gambar1.png" alt="Data 1">
+    <img src="gambar2.png" alt="Data 2">
+    <img src="gambar3.png" alt="Data 3">
+  </div>
+
+  <!-- Tombol untuk buka file PDF -->
+  <a href="dokumen.pdf" target="_blank" class="btn">Buka Dokumen PDF</a>
+
+</body>
+</html>
