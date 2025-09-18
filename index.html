@@ -1,512 +1,122 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Portal Berita Kesehatan - Sederhana</title>
-  <!-- Chart.js CDN -->
+  <meta charset="UTF-8">
+  <title>Website Data Penyakit</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root{
-      --accent:#0f766e; /* hijau ke biru */
-      --muted:#6b7280;
-      --card:#ffffff;
-      --bg: #f8fafc;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
     }
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;}
-    body{
-      background:var(--bg);
-      color:#111827;
-      -webkit-font-smoothing:antialiased;
+    h1 {
+      text-align: center;
+      color: darkgreen;
     }
-    .app{
-      min-height:100vh;
-      background-size:cover;
-      background-position:center;
-      padding:18px;
-      box-sizing:border-box;
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
     }
-    .container{max-width:1100px;margin:0 auto;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(2,6,23,0.08);}
-    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid #e6edf3;}
-    h1{margin:0;font-size:20px;color:var(--accent);}
-    .top-actions{display:flex;gap:8px;align-items:center;}
-    input[type="text"]{padding:8px 10px;border-radius:8px;border:1px solid #d1d5db;min-width:220px;}
-    button{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;}
-    main{display:grid;grid-template-columns:1fr 320px;gap:18px;padding:18px;}
-    .card{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 2px 8px rgba(15,23,42,0.04);}
-    .articles .list{display:grid;gap:12px;}
-    .article-item{display:flex;gap:12px;align-items:flex-start;border-radius:8px;padding:10px;background:#fafafa;border:1px solid #f1f5f9;}
-    .thumb{width:120px;height:80px;background:#e6eef0;border-radius:6px;object-fit:cover;}
-    .article-body{flex:1;}
-    .article-title{font-weight:600;margin:0 0 6px 0;}
-    .muted{color:var(--muted);font-size:13px;}
-    .sidebar .section{margin-bottom:12px;}
-    .disease-list{display:grid;gap:8px;}
-    .disease-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;background:#fff;border:1px solid #eef2f7;}
-    .disease-thumb{width:46px;height:46px;border-radius:6px;background:#f3f4f6;object-fit:cover;}
-    .flex{display:flex;gap:8px;align-items:center;}
-    .center{text-align:center;}
-    footer{padding:12px 18px;color:var(--muted);font-size:13px;border-top:1px solid #e6edf3;}
-    /* modal */
-    .modal-back{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:flex;align-items:center;justify-content:center;z-index:60;}
-    .modal{background:white;padding:18px;border-radius:10px;max-width:860px;width:100%;max-height:90vh;overflow:auto;}
-    .admin-panel{position:fixed;right:18px;bottom:18px;background:#fff;padding:12px;border-radius:10px;box-shadow:0 12px 30px rgba(2,6,23,0.12);z-index:70;}
-    label.file{display:inline-block;padding:8px 10px;border-radius:8px;border:1px dashed #dbeafe;cursor:pointer;background:#f8feff;}
-    .small{font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid #e6eef6;background:#fff;}
-    @media(max-width:900px){
-      main{grid-template-columns:1fr; padding:12px;}
-      .thumb{width:100px;height:72px;}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
     }
   </style>
 </head>
 <body>
-  <div id="app" class="app">
-    <div class="container">
-      <header>
-        <div>
-          <h1>Portal Survailance Puskesmas Kediri</h1>
-          <div class="muted">Informasi penyakit, pencegahan, dan data yang mudah dipahami</div>
-        </div>
-        <div class="top-actions">
-          <input id="search" type="text" placeholder="Cari artikel atau penyakit..." />
-          <button id="btn-open-admin">Admin</button>
-        </div>
-      </header>
+  <h1>Data Penyakit & Statistik</h1>
 
-      <main>
-        <!-- Left: Articles -->
-        <section class="articles">
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div>
-                <strong>Berita Terbaru</strong><div class="muted">Ringkasan berita kesehatan</div>
-              </div>
-              <div class="muted small">Klik judul untuk lihat lengkap</div>
-            </div>
-
-            <div style="height:12px"></div>
-            <div class="list" id="articles-list"></div>
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="card">
-            <strong>Grafik Kasus (contoh)</strong>
-            <canvas id="casesChart" style="width:100%;height:260px;margin-top:12px;"></canvas>
-            <div class="muted small" style="margin-top:8px;">Data contoh — ganti di Admin atau di konsol developer</div>
-          </div>
-        </section>
-
-        <!-- Right: Sidebar -->
-        <aside class="sidebar">
-          <div class="card section">
-            <strong>Direktori Penyakit</strong>
-            <div class="muted" style="font-size:13px;margin-top:6px;">Klik untuk melihat ringkasan</div>
-            <div style="height:10px"></div>
-            <div class="disease-list" id="disease-list"></div>
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="card section">
-            <strong>Gallery Foto</strong>
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;" id="gallery"></div>
-            <div style="height:8px"></div>
-            <div class="muted small">Foto artikel (diambil dari unggahan)</div>
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="card section center">
-            <strong>Ubah Latar</strong>
-            <div style="height:8px"></div>
-            <label class="file">Pilih gambar<input id="bgUpload" type="file" accept="image/*" style="display:none" /></label>
-            <div style="height:8px"></div>
-            <button id="resetBg" class="small">Reset Latar</button>
-            <div style="height:8px"></div>
-            <div class="muted small">Latar disimpan di browser (localStorage)</div>
-          </div>
-        </aside>
-      </main>
-
-      <footer>© Portal Berita Kesehatan — Template sederhana. Data disimpan pada browser (localStorage).</footer>
-    </div>
-
-    <!-- Admin Panel (toggle) -->
-    <div id="adminPanel" class="admin-panel" style="display:none;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <strong>Admin Cepat</strong>
-        <button id="closeAdmin" style="background:#eee;color:#333;border-radius:6px;padding:6px 8px;border:none;cursor:pointer;">X</button>
-      </div>
-      <div style="margin-top:8px;display:grid;gap:8px;">
-        <button id="addArticle" class="small">Tambah Artikel</button>
-        <button id="addDisease" class="small">Tambah Penyakit</button>
-        <button id="clearAll" class="small" style="background:#fee2e2;color:#991b1b;">Reset Lokal</button>
-        <div class="muted small">Perubahan disimpan di komputermu (localStorage).</div>
-      </div>
-    </div>
-
-    <!-- Modal area -->
-    <div id="modalRoot"></div>
+  <!-- Bagian Tabel Data Penyakit -->
+  <div class="card">
+    <h2>📋 Data Penyakit</h2>
+    <table>
+      <tr>
+        <th>No</th>
+        <th>Nama Penyakit</th>
+        <th>Jumlah Kasus</th>
+        <th>Tahun</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>TBC</td>
+        <td>150</td>
+        <td>2024</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Demam Berdarah</td>
+        <td>200</td>
+        <td>2024</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Malaria</td>
+        <td>80</td>
+        <td>2024</td>
+      </tr>
+    </table>
   </div>
 
-<script>
-/*
-  Portal Berita Kesehatan - Single-file HTML template
-  Fitur:
-  - Simpan artikel & penyakit ke localStorage
-  - Upload gambar (dataURL) untuk artikel/penyakit
-  - Ganti latar dengan upload (disimpan di localStorage)
-  - Chart.js untuk grafik kasus
-  - Pencarian sederhana
-*/
+  <!-- Bagian Grafik Penyakit -->
+  <div class="card">
+    <h2>📊 Grafik Kasus Penyakit</h2>
+    <canvas id="chartPenyakit"></canvas>
+  </div>
 
-// ---------- Utility ----------
-const $ = sel => document.querySelector(sel);
-const qs = sel => document.querySelectorAll(sel);
+  <!-- Bagian Upload PDF -->
+  <div class="card">
+    <h2>📂 Upload & Lihat File PDF</h2>
+    <input type="file" id="pdfUpload" accept="application/pdf">
+    <iframe id="pdfViewer"></iframe>
+  </div>
 
-// Default data (dipakai pertama kali)
-const defaultArticles = [
-  { id:1, title:'Tips jaga imunitas di musim hujan', excerpt:'Langkah sederhana untuk memperkuat daya tahan tubuh.', content:'Perbanyak istirahat, makan bergizi, dan cuci tangan secara teratur.', image:null, date:'2025-09-18' },
-  { id:2, title:'Mengenali gejala demam berdarah', excerpt:'Apa yang perlu diperhatikan bila demam tinggi.', content:'DBD ditandai demam tinggi, nyeri otot, bintik merah pada kulit; segera ke fasilitas kesehatan.', image:null, date:'2025-09-10' }
-];
-const defaultDiseases = [
-  { id:'covid19', name:'COVID-19', summary:'Infeksi saluran pernapasan oleh SARS-CoV-2', details:'Gejala: demam, batuk, sesak napas. Pencegahan: vaksinasi, masker, vaksin.', image:null },
-  { id:'tbc', name:'Tuberkulosis', summary:'Infeksi bakteri pada paru', details:'Gejala: batuk >2 minggu, berat badan turun, keringat malam.', image:null }
-];
+  <script>
+    // Membuat grafik penyakit
+    const ctx = document.getElementById('chartPenyakit').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['TBC', 'Demam Berdarah', 'Malaria'],
+        datasets: [{
+          label: 'Jumlah Kasus Tahun 2024',
+          data: [150, 200, 80],
+          backgroundColor: ['#4CAF50', '#FF5722', '#2196F3']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' }
+        }
+      }
+    });
 
-function loadJSON(key, fallback){
-  try{
-    const raw = localStorage.getItem(key);
-    if(!raw) return fallback;
-    return JSON.parse(raw);
-  }catch(e){ return fallback; }
-}
-function saveJSON(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
-
-// ---------- State ----------
-let articles = loadJSON('hp_articles', defaultArticles);
-let diseases = loadJSON('hp_diseases', defaultDiseases);
-let bgData = localStorage.getItem('hp_bg') || '';
-let chartData = loadJSON('hp_chart', { labels:['Jan','Feb','Mar','Apr','May','Jun'], values:[120,90,140,160,200,170] });
-
-// ---------- DOM refs ----------
-const articleListEl = $('#articles-list');
-const diseaseListEl = $('#disease-list');
-const galleryEl = $('#gallery');
-const modalRoot = $('#modalRoot');
-const adminPanel = $('#adminPanel');
-const bgUpload = $('#bgUpload');
-const resetBg = $('#resetBg');
-const searchInput = $('#search');
-
-// ---------- Rendering ----------
-function renderArticles(filter=''){
-  articleListEl.innerHTML = '';
-  const filtered = articles.filter(a => (a.title + ' ' + a.excerpt).toLowerCase().includes(filter.toLowerCase()));
-  if(filtered.length===0){
-    articleListEl.innerHTML = '<div class="muted center">Tidak ada artikel</div>';
-    return;
-  }
-  filtered.forEach(a=>{
-    const div = document.createElement('div');
-    div.className = 'article-item';
-    div.innerHTML = `
-      <img class="thumb" src="${a.image||''}" onerror="this.style.background='#e6eef0';this.src=''" />
-      <div class="article-body">
-        <div style="display:flex;justify-content:space-between;">
-          <h3 class="article-title">${escapeHtml(a.title)}</h3>
-          <div class="muted" style="font-size:12px">${a.date||''}</div>
-        </div>
-        <div class="muted" style="margin-top:6px">${escapeHtml(a.excerpt)}</div>
-        <div style="height:8px"></div>
-        <div style="display:flex;gap:8px;">
-          <button class="small" data-id="${a.id}" data-action="read">Baca</button>
-          <button class="small" data-id="${a.id}" data-action="edit">Edit</button>
-          <button class="small" data-id="${a.id}" data-action="del" style="background:#fee2e2;color:#991b1b;">Hapus</button>
-        </div>
-      </div>
-    `;
-    articleListEl.appendChild(div);
-  });
-}
-
-function renderDiseases(filter=''){
-  diseaseListEl.innerHTML = '';
-  const filtered = diseases.filter(d => (d.name + ' ' + d.summary).toLowerCase().includes(filter.toLowerCase()));
-  if(filtered.length===0){ diseaseListEl.innerHTML = '<div class="muted center">Tidak ada data penyakit</div>'; return; }
-  filtered.forEach(d=>{
-    const el = document.createElement('div');
-    el.className = 'disease-item';
-    el.innerHTML = `
-      <img class="disease-thumb" src="${d.image||''}" onerror="this.src='';this.style.background='#f3f4f6'" />
-      <div style="flex:1;">
-        <div style="font-weight:600">${escapeHtml(d.name)}</div>
-        <div class="muted" style="font-size:13px">${escapeHtml(d.summary)}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px;">
-        <button class="small" data-id="${d.id}" data-action="view">Lihat</button>
-        <button class="small" data-id="${d.id}" data-action="edit">Edit</button>
-      </div>
-    `;
-    diseaseListEl.appendChild(el);
-  });
-}
-
-function renderGallery(){
-  galleryEl.innerHTML = '';
-  const imgs = articles.map(a => a.image).filter(Boolean).slice(0,4);
-  if(imgs.length===0){
-    galleryEl.innerHTML = '<div class="muted center">Belum ada foto</div>';
-    return;
-  }
-  imgs.forEach(src=>{
-    const d = document.createElement('div');
-    d.style.height = '80px';
-    d.style.borderRadius = '8px';
-    d.style.overflow = 'hidden';
-    d.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover"/>`;
-    galleryEl.appendChild(d);
-  });
-}
-
-function applyBg(){
-  const app = document.getElementById('app');
-  if(bgData){
-    app.style.backgroundImage = `url(${bgData})`;
-  }else{
-    app.style.backgroundImage = '';
-  }
-}
-
-function saveAll(){
-  saveJSON('hp_articles', articles);
-  saveJSON('hp_diseases', diseases);
-  localStorage.setItem('hp_bg', bgData || '');
-  saveJSON('hp_chart', chartData);
-}
-
-// ---------- Modal helpers ----------
-function openModal(html){
-  modalRoot.innerHTML = `<div class="modal-back" id="modalBack"><div class="modal">${html}</div></div>`;
-  document.getElementById('modalBack').addEventListener('click', (e)=>{
-    if(e.target.id === 'modalBack'){ closeModal(); }
-  });
-}
-function closeModal(){ modalRoot.innerHTML = ''; }
-
-// ---------- CRUD Actions ----------
-function addArticle(){
-  const id = Date.now();
-  const newA = { id, title:'Judul baru', excerpt:'Ringkasan singkat...', content:'Isi lengkap di sini...', image:null, date: new Date().toISOString().slice(0,10) };
-  articles.unshift(newA); saveAll(); renderAll();
-  editArticle(id);
-}
-function editArticle(id){
-  const a = articles.find(x => x.id===id);
-  if(!a) return;
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <strong>Edit Artikel</strong>
-      <button onclick="window.closeModal()">Tutup</button>
-    </div>
-    <div style="height:8px;"></div>
-    <div>
-      <label>Judul</label><br/>
-      <input id="m_title" type="text" value="${escapeHtml(a.title)}" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6edf3"/>
-      <div style="height:8px"></div>
-      <label>Ringkasan</label><br/>
-      <input id="m_excerpt" type="text" value="${escapeHtml(a.excerpt)}" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6edf3"/>
-      <div style="height:8px"></div>
-      <label>Isi</label><br/>
-      <textarea id="m_content" style="width:100%;min-height:140px;padding:8px;border-radius:8px;border:1px solid #e6edf3">${escapeHtml(a.content)}</textarea>
-      <div style="height:8px"></div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <label class="file">Ganti Foto<input id="m_img" type="file" accept="image/*" style="display:none" /></label>
-        <button id="saveArticle" class="small">Simpan</button>
-        <button id="delArticle" class="small" style="background:#fee2e2;color:#991b1b;">Hapus</button>
-      </div>
-    </div>
-  `);
-  // attach handlers after modal shown
-  document.getElementById('m_img').addEventListener('change', (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const r = new FileReader();
-    r.onload = ()=> {
-      a.image = r.result; saveAll(); renderAll(); // preview updated in lists
-    };
-    r.readAsDataURL(file);
-  });
-  $('#saveArticle').addEventListener('click', ()=>{
-    a.title = $('#m_title').value.trim();
-    a.excerpt = $('#m_excerpt').value.trim();
-    a.content = $('#m_content').value.trim();
-    saveAll(); renderAll(); closeModal();
-  });
-  $('#delArticle').addEventListener('click', ()=>{
-    if(!confirm('Hapus artikel ini?')) return;
-    articles = articles.filter(x=>x.id!==id); saveAll(); renderAll(); closeModal();
-  });
-}
-
-function readArticle(id){
-  const a = articles.find(x => x.id===id);
-  if(!a) return;
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <strong>${escapeHtml(a.title)}</strong>
-      <button onclick="window.closeModal()">Tutup</button>
-    </div>
-    ${a.image ? `<div style="height:12px"></div><img src="${a.image}" style="width:100%;max-height:300px;object-fit:cover;border-radius:8px;"/>` : ''}
-    <div style="height:8px"></div>
-    <div class="muted">${escapeHtml(a.date||'')}</div>
-    <div style="height:8px"></div>
-    <div>${nl2br(escapeHtml(a.content))}</div>
-  `);
-}
-
-function addDisease(){
-  const id = 'd_' + Date.now();
-  const newD = { id, name:'Penyakit baru', summary:'Ringkasan singkat', details:'Penjelasan lengkap', image:null };
-  diseases.unshift(newD); saveAll(); renderAll();
-  editDisease(id);
-}
-function editDisease(id){
-  const d = diseases.find(x=>x.id===id);
-  if(!d) return;
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <strong>Edit Penyakit</strong>
-      <button onclick="window.closeModal()">Tutup</button>
-    </div>
-    <div style="height:8px"></div>
-    <label>Nama</label><br/>
-    <input id="md_name" type="text" value="${escapeHtml(d.name)}" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6edf3"/>
-    <div style="height:8px"></div>
-    <label>Ringkasan</label><br/>
-    <input id="md_summary" type="text" value="${escapeHtml(d.summary)}" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6edf3"/>
-    <div style="height:8px"></div>
-    <label>Penjelasan</label><br/>
-    <textarea id="md_details" style="width:100%;min-height:120px;padding:8px;border-radius:8px;border:1px solid #e6edf3">${escapeHtml(d.details)}</textarea>
-    <div style="height:8px"></div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <label class="file">Ganti Foto<input id="md_img" type="file" accept="image/*" style="display:none" /></label>
-      <button id="saveDisease" class="small">Simpan</button>
-    </div>
-  `);
-  document.getElementById('md_img').addEventListener('change', (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const r = new FileReader();
-    r.onload = ()=> { d.image = r.result; saveAll(); renderAll(); };
-    r.readAsDataURL(file);
-  });
-  $('#saveDisease').addEventListener('click', ()=>{
-    d.name = $('#md_name').value.trim();
-    d.summary = $('#md_summary').value.trim();
-    d.details = $('#md_details').value.trim();
-    saveAll(); renderAll(); closeModal();
-  });
-}
-
-function viewDisease(id){
-  const d = diseases.find(x=>x.id===id);
-  if(!d) return;
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <strong>${escapeHtml(d.name)}</strong>
-      <button onclick="window.closeModal()">Tutup</button>
-    </div>
-    ${d.image ? `<div style="height:12px"></div><img src="${d.image}" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px;"/>` : ''}
-    <div style="height:8px"></div>
-    <div class="muted">${escapeHtml(d.summary)}</div>
-    <div style="height:8px"></div>
-    <div>${nl2br(escapeHtml(d.details))}</div>
-  `);
-}
-
-// ---------- Events & delegation ----------
-document.body.addEventListener('click', (e)=>{
-  const target = e.target;
-  const action = target.getAttribute && target.getAttribute('data-action');
-  const id = target.getAttribute && target.getAttribute('data-id');
-  if(action && id){
-    if(action==='read'){ readArticle(Number(id)); }
-    if(action==='edit'){ editArticle(Number(id)); }
-    if(action==='del'){ if(confirm('Hapus artikel?')){ articles = articles.filter(x=>x.id!==Number(id)); saveAll(); renderAll(); } }
-    if(action==='view'){ viewDisease(id); }
-    if(action==='edit' && id.startsWith('d_')){ editDisease(id); }
-  }
-});
-
-// Admin controls
-$('#btn-open-admin').addEventListener('click', ()=> adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'block');
-$('#closeAdmin').addEventListener('click', ()=> adminPanel.style.display = 'none');
-$('#addArticle').addEventListener('click', addArticle);
-$('#addDisease').addEventListener('click', addDisease);
-$('#clearAll').addEventListener('click', ()=> {
-  if(!confirm('Reset semua data lokal?')) return;
-  localStorage.clear(); articles = defaultArticles.slice(); diseases = defaultDiseases.slice(); bgData=''; chartData = { labels:['Jan','Feb','Mar','Apr','May','Jun'], values:[120,90,140,160,200,170] }; saveAll(); applyBg(); renderAll();
-});
-
-// Background upload
-bgUpload.addEventListener('change', (e)=>{
-  const f = e.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ()=>{ bgData = r.result; localStorage.setItem('hp_bg', bgData); applyBg(); };
-  r.readAsDataURL(f);
-});
-resetBg.addEventListener('click', ()=>{ bgData=''; localStorage.removeItem('hp_bg'); applyBg(); });
-
-// Search
-searchInput.addEventListener('input', (e)=>{ const q = e.target.value; renderAll(q); });
-
-// ---------- Chart ----------
-let chart = null;
-function renderChart(){
-  const ctx = document.getElementById('casesChart').getContext('2d');
-  if(chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: chartData.labels,
-      datasets: [{
-        label: 'Kasus',
-        data: chartData.values,
-        fill:false,
-        tension:0.3,
-        borderWidth:2,
-      }]
-    },
-    options:{
-      plugins:{legend:{display:false}},
-      scales:{y:{beginAtZero:true}}
-    }
-  });
-}
-
-// ---------- Helpers ----------
-function renderAll(filter=''){
-  renderArticles(filter);
-  renderDiseases(filter);
-  renderGallery();
-  applyBg();
-  renderChart();
-}
-function escapeHtml(str){ if(!str && str!==0) return ''; return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
-function nl2br(s){ return s.replaceAll('\\n','<br/>').replaceAll('\\r','<br/>').replaceAll('\\n\\r','<br/>').replaceAll('\\r\\n','<br/>'); }
-
-// Expose modal helpers to inline onclick strings
-window.closeModal = closeModal;
-
-// Initialize
-renderAll();
-
-// Small: expose global for power users (console)
-window._hp = { articles, diseases, saveAll, renderAll, chartData };
-
-</script>
+    // Fitur Upload dan tampilkan PDF
+    document.getElementById('pdfUpload').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const fileURL = URL.createObjectURL(file);
+        document.getElementById('pdfViewer').src = fileURL;
+      }
+    });
+  </script>
 </body>
 </html>
-
