@@ -1,123 +1,582 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Website Data Penyakit</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: url('gambar latar.jpg') no-repeat center center fixed;
-      background-size: cover;
-    }
-    h1 {
-      text-align: center;
-      color: darkgreen;
-    }
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      margin-bottom: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    table, th, td {
-      border: 1px solid #ddd;
-    }
-    th, td {
-      padding: 10px;
-      text-align: center;
-    }
-    iframe {
-      width: 100%;
-      height: 500px;
-      border: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Data Grafik</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid white;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .theme-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .theme-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .theme-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .theme-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+        .main-content {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .sample-image {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 3rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Data Penyakit & Statistik</h1>
+    <header class="header">
+        <div class="logo-section">
+            <div class="logo" id="logoDisplay">📊</div>
+            <h1 class="title">Dashboard Data</h1>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="document.getElementById('logoInput').click()">
+                📷 Ganti Logo
+            </button>
+            <input type="file" id="logoInput" class="file-input" accept="image/*">
+            
+            <div class="theme-selector">
+                <div class="theme-btn theme-1" onclick="changeTheme(1)"></div>
+                <div class="theme-btn theme-2" onclick="changeTheme(2)"></div>
+                <div class="theme-btn theme-3" onclick="changeTheme(3)"></div>
+                <div class="theme-btn theme-4" onclick="changeTheme(4)"></div>
+                <div class="theme-btn theme-5" onclick="changeTheme(5)"></div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="addNewChart()">
+                ➕ Tambah Grafik
+            </button>
+        </div>
+    </header>
 
-  <!-- Bagian Tabel Data Penyakit -->
-  <div class="card">
-    <h2>📋 Data Penyakit</h2>
-    <table>
-      <tr>
-        <th>No</th>
-        <th>Nama Penyakit</th>
-        <th>Jumlah Kasus</th>
-        <th>Tahun</th>
-      </tr>
-      <tr>
-        <td>1</td>
-        <td>TBC</td>
-        <td>150</td>
-        <td>2024</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>Demam Berdarah</td>
-        <td>200</td>
-        <td>2024</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>Malaria</td>
-        <td>80</td>
-        <td>2024</td>
-      </tr>
-    </table>
-  </div>
+    <main class="main-content" id="mainContent">
+        <!-- Grafik Penjualan -->
+        <div class="card">
+            <div class="card-title">
+                📈 Grafik Penjualan Bulanan
+                <button class="btn btn-secondary" onclick="updateChart('salesChart')">🔄 Update</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">125</div>
+                    <div class="stat-label">Total Penjualan</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">+15%</div>
+                    <div class="stat-label">Pertumbuhan</div>
+                </div>
+            </div>
+        </div>
 
-  <!-- Bagian Grafik Penyakit -->
-  <div class="card">
-    <h2>📊 Grafik Kasus Penyakit</h2>
-    <canvas id="chartPenyakit"></canvas>
-  </div>
+        <!-- Grafik Pengunjung -->
+        <div class="card">
+            <div class="card-title">
+                👥 Statistik Pengunjung
+                <button class="btn btn-secondary" onclick="updateChart('visitorChart')">🔄 Update</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="visitorChart"></canvas>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">2,847</div>
+                    <div class="stat-label">Pengunjung Hari Ini</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">68%</div>
+                    <div class="stat-label">Pengunjung Baru</div>
+                </div>
+            </div>
+        </div>
 
-  <!-- Bagian Upload PDF -->
-  <div class="card">
-    <h2>📂 Upload & Lihat File PDF</h2>
-    <input type="file" id="pdfUpload" accept="application/pdf">
-    <iframe id="pdfViewer"></iframe>
-  </div>
+        <!-- Area Gambar -->
+        <div class="card">
+            <div class="card-title">
+                🖼️ Galeri Gambar
+                <button class="btn btn-secondary" onclick="document.getElementById('imageInput').click()">📁 Pilih Gambar</button>
+            </div>
+            <div class="image-container">
+                <div class="sample-image" id="displayImage">🖼️</div>
+            </div>
+            <div class="upload-area" onclick="document.getElementById('imageInput').click()" 
+                 ondrop="handleImageDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <p>📁 Klik atau seret gambar ke sini</p>
+                <small>Format: JPG, PNG, GIF (Maks 5MB)</small>
+            </div>
+            <input type="file" id="imageInput" class="file-input" accept="image/*" multiple>
+        </div>
 
-  <script>
-    // Membuat grafik penyakit
-    const ctx = document.getElementById('chartPenyakit').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['TBC', 'Demam Berdarah', 'Malaria'],
-        datasets: [{
-          label: 'Jumlah Kasus Tahun 2024',
-          data: [150, 200, 80],
-          backgroundColor: ['#4CAF50', '#FF5722', '#2196F3']
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' }
+        <!-- Grafik Donut -->
+        <div class="card">
+            <div class="card-title">
+                🍩 Distribusi Kategori
+                <button class="btn btn-secondary" onclick="updateChart('categoryChart')">🔄 Update</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Kategori Aktif</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">89%</div>
+                    <div class="stat-label">Efisiensi</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Tema warna
+        const themes = {
+            1: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            2: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            3: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            4: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            5: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+        };
+
+        // Inisialisasi grafik
+        let charts = {};
+
+        function initCharts() {
+            // Grafik Penjualan (Line Chart)
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            charts.salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                    datasets: [{
+                        label: 'Penjualan',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Grafik Pengunjung (Bar Chart)
+            const visitorCtx = document.getElementById('visitorChart').getContext('2d');
+            charts.visitorChart = new Chart(visitorCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+                    datasets: [{
+                        label: 'Pengunjung',
+                        data: [65, 59, 80, 81, 56, 55, 40],
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: '#667eea',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Grafik Kategori (Doughnut Chart)
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            charts.categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Produk A', 'Produk B', 'Produk C', 'Produk D', 'Lainnya'],
+                    datasets: [{
+                        data: [30, 25, 20, 15, 10],
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb',
+                            '#4facfe',
+                            '#43e97b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
         }
-      }
-    });
 
-    // Fitur Upload dan tampilkan PDF
-    document.getElementById('pdfUpload').addEventListener('change', function(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const fileURL = URL.createObjectURL(file);
-        document.getElementById('pdfViewer').src = fileURL;
-      }
-    });
-  </script>
-</body>
+        // Ganti tema
+        function changeTheme(themeNumber) {
+            document.body.style.background = themes[themeNumber];
+        }
+
+        // Update grafik dengan data acak
+        function updateChart(chartId) {
+            const chart = charts[chartId];
+            if (!chart) return;
+
+            if (chartId === 'salesChart') {
+                chart.data.datasets[0].data = Array.from({length: 6}, () => Math.floor(Math.random() * 50) + 1);
+            } else if (chartId === 'visitorChart') {
+                chart.data.datasets[0].data = Array.from({length: 7}, () => Math.floor(Math.random() * 100) + 20);
+            } else if (chartId === 'categoryChart') {
+                chart.data.datasets[0].data = Array.from({length: 5}, () => Math.floor(Math.random() * 40) + 10);
+            }
+            
+            chart.update();
+        }
+
+        // Ganti logo
+        document.getElementById('logoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const logoDisplay = document.getElementById('logoDisplay');
+                    logoDisplay.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle gambar
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const displayImage = document.getElementById('displayImage');
+                    displayImage.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Drag and drop untuk gambar
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleImageDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const displayImage = document.getElementById('displayImage');
+                        displayImage.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // Tambah grafik baru
+        function addNewChart() {
+            const mainContent = document.getElementById('mainContent');
+            const newCard = document.createElement('div');
+            newCard.className = 'card';
+            
+            const chartId = 'chart_' + Date.now();
+            newCard.innerHTML = `
+                <div class="card-title">
+                    📊 Grafik Baru
+                    <button class="btn btn-secondary" onclick="updateChart('${chartId}')">🔄 Update</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="${chartId}"></canvas>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">${Math.floor(Math.random() * 100)}</div>
+                        <div class="stat-label">Data Baru</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">+${Math.floor(Math.random() * 50)}%</div>
+                        <div class="stat-label">Perubahan</div>
+                    </div>
+                </div>
+            `;
+            
+            mainContent.appendChild(newCard);
+            
+            // Buat grafik baru
+            setTimeout(() => {
+                const ctx = document.getElementById(chartId).getContext('2d');
+                charts[chartId] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['A', 'B', 'C', 'D', 'E'],
+                        datasets: [{
+                            label: 'Data',
+                            data: Array.from({length: 5}, () => Math.floor(Math.random() * 50) + 1),
+                            backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                            borderColor: '#667eea',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        // Inisialisasi saat halaman dimuat
+        window.addEventListener('load', function() {
+            initCharts();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9814fe09948f35f2',t:'MTc1ODI0MjAxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 
